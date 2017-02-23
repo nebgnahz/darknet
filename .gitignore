@@ -27,4 +27,5 @@ Thumbs.db
 
 ## library and dataset
 darknet.a
+darknet.so
 yolo.weights

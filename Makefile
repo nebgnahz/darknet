@@ -21,7 +21,7 @@ NVCC=nvcc
 OPTS=-Ofast
 LDFLAGS= -lm -pthread 
 COMMON= 
-CFLAGS=-Wall -Wfatal-errors 
+CFLAGS=-Wall -Wfatal-errors -fPIC
 
 ifeq ($(DEBUG), 1) 
 OPTS=-O0 -g
@@ -58,7 +58,7 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ))
 DEPS = $(wildcard src/*.h) Makefile
 HEADERS = $(wildcard src/*.h)
 
-all: obj backup results $(EXEC) darknet.a
+all: obj backup results $(EXEC) darknet.a darknet.so
 
 $(EXEC): $(OBJS)
 	$(CC) $(COMMON) $(CFLAGS) $^ -o $@ $(LDFLAGS)
@@ -71,6 +71,9 @@ $(OBJDIR)%.o: %.cu $(DEPS)
 
 darknet.a: $(OBJS)
 	ar rcs $@ $^
+
+darknet.so: $(OBJS)
+	$(CC) -shared -fPIC -o $@ $^
 
 obj:
 	mkdir -p obj
