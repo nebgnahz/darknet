@@ -24,3 +24,7 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.swp
+
+## library and dataset
+darknet.a
+yolo.weights
