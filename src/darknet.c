@@ -42,13 +42,13 @@ void average(int argc, char *argv[])
     network net = parse_network_cfg(cfgfile);
     network sum = parse_network_cfg(cfgfile);
 
-    char *weightfile = argv[4];   
+    char *weightfile = argv[4];
     load_weights(&sum, weightfile);
 
     int i, j;
     int n = argc - 5;
     for(i = 0; i < n; ++i){
-        weightfile = argv[i+5];   
+        weightfile = argv[i+5];
         load_weights(&net, weightfile);
         for(j = 0; j < net.n; ++j){
             layer l = net.layers[j];
@@ -377,7 +377,13 @@ int main(int argc, char **argv)
     if (0 == strcmp(argv[1], "average")){
         average(argc, argv);
     } else if (0 == strcmp(argv[1], "api")){
-        detect_api(argv[2]);
+        Darknet *dn = darknet_new();
+        Size s = darknet_size(dn);
+        image im = load_image_color(argv[2], 0, 0);
+        image sized = resize_image(im, s.width, s.height);
+        InputImage image = { .data = sized.data, .size = s.width * s.height };
+        darknet_detect(dn, image);
+        darknet_drop(dn);
     } else if (0 == strcmp(argv[1], "yolo")){
         run_yolo(argc, argv);
     } else if (0 == strcmp(argv[1], "voxel")){
@@ -453,4 +459,3 @@ int main(int argc, char **argv)
     }
     return 0;
 }
-
