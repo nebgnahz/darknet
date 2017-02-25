@@ -8,6 +8,8 @@
 #include "blas.h"
 #include "connected_layer.h"
 
+#include "wrapper.h"
+
 #ifdef OPENCV
 #include "opencv2/highgui/highgui_c.h"
 #endif
@@ -374,6 +376,8 @@ int main(int argc, char **argv)
 
     if (0 == strcmp(argv[1], "average")){
         average(argc, argv);
+    } else if (0 == strcmp(argv[1], "api")){
+        detect_api(argv[2]);
     } else if (0 == strcmp(argv[1], "yolo")){
         run_yolo(argc, argv);
     } else if (0 == strcmp(argv[1], "voxel")){
