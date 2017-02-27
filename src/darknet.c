@@ -382,7 +382,18 @@ int main(int argc, char **argv)
         image im = load_image_color(argv[2], 0, 0);
         image sized = resize_image(im, s.width, s.height);
         InputImage image = { .data = sized.data, .size = s.width * s.height };
-        darknet_detect(dn, image);
+        Detections detections = darknet_detect(dn, image);
+
+        for (int i = 0; i < detections.num; i++) {
+            printf("%s, %f, %f, %f, %f, %f\n",
+                   detections.labels[i],
+                   detections.probs[i],
+                   detections.rects[i].x,
+                   detections.rects[i].y,
+                   detections.rects[i].w,
+                   detections.rects[i].h);                   
+        }
+        
         darknet_drop(dn);
     } else if (0 == strcmp(argv[1], "yolo")){
         run_yolo(argc, argv);

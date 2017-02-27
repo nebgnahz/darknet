@@ -20,6 +20,13 @@ typedef struct {
 } Rect;
 
 typedef struct {
+    Rect* rects;
+    char** labels;
+    float* probs;
+    int num;
+} Detections;
+
+typedef struct {
   network network;
   int net_size;
   char **names;
@@ -40,4 +47,4 @@ typedef struct {
 Darknet* darknet_new();
 void darknet_drop(Darknet* darknet);
 Size darknet_size(const Darknet *const darknet);
-Rect *darknet_detect(Darknet *darknet, InputImage image);
+Detections darknet_detect(Darknet *darknet, InputImage image);

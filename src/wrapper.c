@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "wrapper.h"
 #include "box.h"
 #include "cost_layer.h"
@@ -47,7 +49,7 @@ Darknet *darknet_new() {
   return darknet;
 }
 
-Rect *darknet_detect(Darknet *darknet, InputImage image) {
+Detections darknet_detect(Darknet *darknet, InputImage image) {
   clock_t time;
   time = clock();
 
@@ -71,19 +73,43 @@ Rect *darknet_detect(Darknet *darknet, InputImage image) {
 
   // The network will return l.w * l.h * l.n detections
   // But only those exceeds the threshold are valid
+  int num = 0;
+
+  // First count how many
   for (int i = 0; i < net_size; ++i) {
     int class = max_index(probs[i], l.classes);
     float prob = probs[i][class];
     if (prob > thresh) {
-      printf("%s: %.0f%%\n", names[class], prob * 100);
-      box b = boxes[i];
-
-
-      printf("%.2f %.2f %.2f %.2f\n", b.x, b.y, b.w, b.h);
+      num++;
     }
   }
 
-  Rect* detections;
+  Detections detections;
+  detections.rects = calloc(num, sizeof(Rect));
+  detections.labels = calloc(num, sizeof(char*));
+  detections.probs = calloc(num, sizeof(float));
+  detections.num = num;
+
+  // reset num and start to assign
+  num = 0;
+  for (int i = 0; i < net_size; ++i) {
+    int class = max_index(probs[i], l.classes);
+    float prob = probs[i][class];
+    if (prob > thresh) {
+      detections.labels[num] = names[class];
+      detections.probs[num] = prob;
+      box b = boxes[i];
+      detections.rects[num].x = b.x;
+      detections.rects[num].y = b.y;
+      detections.rects[num].w = b.w;
+      detections.rects[num].h = b.h;
+
+      num++;
+    }
+  }
+  printf("%d %d\n", num, detections.num);
+  assert(num == detections.num);
+
   return detections;
 }
 
