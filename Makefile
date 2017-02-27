@@ -1,6 +1,6 @@
 GPU=1
 CUDNN=0
-OPENCV=1
+OPENCV=0
 DEBUG=0
 
 ARCH= -gencode arch=compute_20,code=[sm_20,sm_21] \
@@ -58,7 +58,7 @@ OBJS = $(addprefix $(OBJDIR), $(OBJ))
 DEPS = $(wildcard src/*.h) Makefile
 HEADERS = $(wildcard src/*.h)
 
-all: obj backup results $(EXEC) darknet.a darknet.so
+all: obj backup results $(EXEC) libdarknet.a libdarknet.so
 
 $(EXEC): $(OBJS)
 	$(CC) $(COMMON) $(CFLAGS) $^ -o $@ $(LDFLAGS)
@@ -69,10 +69,10 @@ $(OBJDIR)%.o: %.c $(DEPS)
 $(OBJDIR)%.o: %.cu $(DEPS)
 	$(NVCC) $(ARCH) $(COMMON) --compiler-options "$(CFLAGS)" -c $< -o $@
 
-darknet.a: $(OBJS)
+libdarknet.a: $(OBJS)
 	ar rcs $@ $^
 
-darknet.so: $(OBJS)
+libdarknet.so: $(OBJS)
 	$(CC) -shared -fPIC -o $@ $^
 
 obj:

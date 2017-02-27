@@ -28,11 +28,11 @@ Darknet *darknet_new() {
   set_batch_network(&net, 1);
 
   layer l = net.layers[net.n - 1];
-  int net_size = l.w * l.h * l.n;
+  int32_t net_size = l.w * l.h * l.n;
   box *boxes = calloc(net_size, sizeof(box));
   float **probs = calloc(net_size, sizeof(float *));
 
-  for (int j = 0; j < net_size; ++j)
+  for (int32_t j = 0; j < net_size; ++j)
     probs[j] = calloc(l.classes + 1, sizeof(float *));
 
   Size s = {.width = net.w, .height = net.h};
@@ -51,10 +51,11 @@ Darknet *darknet_new() {
 
 Detections darknet_detect(Darknet *darknet, InputImage image) {
   clock_t time;
+  Detections detections;
   time = clock();
 
   network_predict(darknet->network, image.data);
-  printf("Predicted in %f seconds.\n", sec(clock() - time));
+  detections.proc_time_in_ms = sec(clock() - time);
 
   layer l = darknet->last_layer;
   float thresh = darknet->thresh;
@@ -62,7 +63,7 @@ Detections darknet_detect(Darknet *darknet, InputImage image) {
   char **names = darknet->names;
   box *boxes = darknet->boxes;
   float nms = darknet->nms;
-  int net_size = darknet->net_size;
+  int32_t net_size = darknet->net_size;
 
   get_region_boxes(l, 1, 1, thresh, probs, boxes, 0, 0, 0.5);
 
@@ -73,18 +74,17 @@ Detections darknet_detect(Darknet *darknet, InputImage image) {
 
   // The network will return l.w * l.h * l.n detections
   // But only those exceeds the threshold are valid
-  int num = 0;
+  int32_t num = 0;
 
   // First count how many
-  for (int i = 0; i < net_size; ++i) {
-    int class = max_index(probs[i], l.classes);
+  for (int32_t i = 0; i < net_size; ++i) {
+    int32_t class = max_index(probs[i], l.classes);
     float prob = probs[i][class];
     if (prob > thresh) {
       num++;
     }
   }
 
-  Detections detections;
   detections.rects = calloc(num, sizeof(Rect));
   detections.labels = calloc(num, sizeof(char*));
   detections.probs = calloc(num, sizeof(float));
@@ -92,8 +92,8 @@ Detections darknet_detect(Darknet *darknet, InputImage image) {
 
   // reset num and start to assign
   num = 0;
-  for (int i = 0; i < net_size; ++i) {
-    int class = max_index(probs[i], l.classes);
+  for (int32_t i = 0; i < net_size; ++i) {
+    int32_t class = max_index(probs[i], l.classes);
     float prob = probs[i][class];
     if (prob > thresh) {
       detections.labels[num] = names[class];
@@ -107,9 +107,7 @@ Detections darknet_detect(Darknet *darknet, InputImage image) {
       num++;
     }
   }
-  printf("%d %d\n", num, detections.num);
   assert(num == detections.num);
-
   return detections;
 }
 
@@ -121,4 +119,10 @@ void darknet_drop(Darknet *darknet) {
   free(darknet->boxes);
   free_ptrs((void **)darknet->probs, darknet->net_size);
   free(darknet);
+}
+
+void detections_drop(Detections detections) {
+  free(detections.rects);
+  free(detections.probs);
+  free_ptrs((void **)detections.labels, detections.num);
 }

@@ -4,12 +4,14 @@
 // A side goal here is to create wrapper structs that are independent of darknet
 // source (such as Size, Rect, etc).
 
+#include <stdint.h>
+
 #include "network.h"
 #include "layer.h"
 
 typedef struct {
-    int width;
-    int height;
+    int32_t width;
+    int32_t height;
 } Size;
 
 typedef struct {
@@ -23,12 +25,13 @@ typedef struct {
     Rect* rects;
     char** labels;
     float* probs;
-    int num;
+    int32_t num;
+    float proc_time_in_ms;
 } Detections;
 
 typedef struct {
   network network;
-  int net_size;
+  int32_t net_size;
   char **names;
   box *boxes;
   float **probs;
@@ -41,10 +44,11 @@ typedef struct {
 // The input must be resized to the proper size
 typedef struct {
   float *data;
-  int size;
+  int32_t size;
 } InputImage;
 
 Darknet* darknet_new();
 void darknet_drop(Darknet* darknet);
 Size darknet_size(const Darknet *const darknet);
 Detections darknet_detect(Darknet *darknet, InputImage image);
+void detections_drop(Detections detections);
