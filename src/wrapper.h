@@ -8,6 +8,7 @@
 
 #include "network.h"
 #include "layer.h"
+#include "image.h"
 
 typedef struct {
     int32_t width;
@@ -43,12 +44,12 @@ typedef struct {
 
 // The input must be resized to the proper size
 typedef struct {
-  float *data;
+  const float *const data;
   int32_t size;
 } InputImage;
 
 Darknet* darknet_new();
 void darknet_drop(Darknet* darknet);
 Size darknet_size(const Darknet *const darknet);
-Detections darknet_detect(Darknet *darknet, InputImage image);
+Detections darknet_detect(Darknet *darknet, image image);
 void detections_drop(Detections detections);

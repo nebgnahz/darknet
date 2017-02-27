@@ -49,10 +49,12 @@ Darknet *darknet_new() {
   return darknet;
 }
 
-Detections darknet_detect(Darknet *darknet, InputImage image) {
+Detections darknet_detect(Darknet *darknet, image image) {
   clock_t time;
   Detections detections;
   time = clock();
+
+  assert(darknet->image_size.width == image.w);
 
   network_predict(darknet->network, image.data);
   detections.proc_time_in_ms = sec(clock() - time);
