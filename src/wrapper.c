@@ -35,7 +35,6 @@ Darknet *darknet_new() {
   for (int32_t j = 0; j < net_size; ++j)
     probs[j] = calloc(l.classes + 1, sizeof(float *));
 
-  Size s = {.width = net.w, .height = net.h};
   Darknet* darknet = calloc(1, sizeof(Darknet));
   darknet->network = net;
   darknet->names = names;
@@ -45,18 +44,17 @@ Darknet *darknet_new() {
   darknet->last_layer = l;
   darknet->nms = 0.4;
   darknet->net_size = net_size;
-  darknet->image_size = s;
   return darknet;
 }
 
-Detections darknet_detect(Darknet *darknet, image image) {
+Detections darknet_detect(Darknet *darknet, image im) {
   clock_t time;
   Detections detections;
+  image sized = resize_image(im, darknet->network.w, darknet->network.h);
+  float *X = sized.data;
+
   time = clock();
-
-  assert(darknet->image_size.width == image.w);
-
-  network_predict(darknet->network, image.data);
+  network_predict(darknet->network, X);
   detections.proc_time_in_ms = sec(clock() - time);
 
   layer l = darknet->last_layer;
@@ -111,10 +109,6 @@ Detections darknet_detect(Darknet *darknet, image image) {
   }
   assert(num == detections.num);
   return detections;
-}
-
-Size darknet_size(const Darknet *const darknet) {
-  return darknet->image_size;
 }
 
 void darknet_drop(Darknet *darknet) {

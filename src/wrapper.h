@@ -2,18 +2,13 @@
 // language bindings (Rust for me).
 //
 // A side goal here is to create wrapper structs that are independent of darknet
-// source (such as Size, Rect, etc).
+// source (such as Rect, etc).
 
 #include <stdint.h>
 
 #include "network.h"
 #include "layer.h"
 #include "image.h"
-
-typedef struct {
-    int32_t width;
-    int32_t height;
-} Size;
 
 typedef struct {
     float x;
@@ -39,7 +34,6 @@ typedef struct {
   float thresh;
   layer last_layer;
   float nms;
-  Size image_size;
 } Darknet;
 
 // The input must be resized to the proper size
@@ -50,6 +44,6 @@ typedef struct {
 
 Darknet* darknet_new();
 void darknet_drop(Darknet* darknet);
-Size darknet_size(const Darknet *const darknet);
+
 Detections darknet_detect(Darknet *darknet, image image);
 void detections_drop(Detections detections);

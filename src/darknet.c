@@ -378,10 +378,8 @@ int main(int argc, char **argv)
         average(argc, argv);
     } else if (0 == strcmp(argv[1], "api")){
         Darknet *dn = darknet_new();
-        Size s = darknet_size(dn);
         image im = load_image_color(argv[2], 0, 0);
-        image sized = resize_image(im, s.width, s.height);
-        Detections detections = darknet_detect(dn, sized);
+        Detections detections = darknet_detect(dn, im);
 
         for (int i = 0; i < detections.num; i++) {
             printf("%s, %f, %f, %f, %f, %f\n",
