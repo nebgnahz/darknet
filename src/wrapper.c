@@ -13,14 +13,14 @@
 extern void cuda_set_device(int n);
 extern int gpu_index;
 
-Darknet *darknet_new() {
+Darknet *darknet_new(DarknetConfig dn_config) {
   cuda_set_device(gpu_index);
-  char *datacfg = "cfg/coco.data";
-  char *cfgfile = "cfg/yolo.cfg";
-  char *weights = "yolo.weights";
+  char *datacfg = dn_config.datacfg;
+  char *cfgfile = dn_config.network_file;
+  char *weights = dn_config.weight_file;
 
   list *options = read_data_cfg(datacfg);
-  char *name_list = option_find_str(options, "names", "data/names.list");
+  char *name_list = option_find_str(options, "names", dn_config.label_file);
   char **names = get_labels(name_list);
 
   network net = parse_network_cfg(cfgfile);

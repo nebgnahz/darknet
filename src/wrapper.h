@@ -26,6 +26,20 @@ typedef struct {
 } Detections;
 
 typedef struct {
+  // data file
+  const unsigned char *const datacfg;
+
+  // network specification
+  const unsigned char *const network_file;
+
+  // weight file (contains the model)
+  const unsigned char *const weight_file;
+
+  // label file (datacfg file may have it)
+  const unsigned char *const label_file;
+} DarknetConfig;
+
+typedef struct {
   network network;
   int32_t net_size;
   char **names;
@@ -42,7 +56,7 @@ typedef struct {
   int32_t size;
 } InputImage;
 
-Darknet* darknet_new();
+Darknet* darknet_new(DarknetConfig dn_config);
 void darknet_drop(Darknet* darknet);
 
 Detections darknet_detect(Darknet *darknet, image image);

@@ -374,23 +374,25 @@ int main(int argc, char **argv)
     }
 #endif
 
-    if (0 == strcmp(argv[1], "average")){
-        average(argc, argv);
-    } else if (0 == strcmp(argv[1], "api")){
-        Darknet *dn = darknet_new();
-        image im = load_image_color(argv[2], 0, 0);
-        Detections detections = darknet_detect(dn, im);
+    if (0 == strcmp(argv[1], "average")) {
+      average(argc, argv);
+    } else if (0 == strcmp(argv[1], "api")) {
+      DarknetConfig config = {.datacfg = "cfg/coco.data",
+                              .network_file = "cfg/yolo.cfg",
+                              .weight_file = "yolo.weights",
+                              .label_file = "data/names.weights"};
 
-        for (int i = 0; i < detections.num; i++) {
-            printf("%s, %f, %f, %f, %f, %f\n",
-                   detections.labels[i],
-                   detections.probs[i],
-                   detections.rects[i].x,
-                   detections.rects[i].y,
-                   detections.rects[i].w,
-                   detections.rects[i].h);
-        }
-        darknet_drop(dn);
+      Darknet *dn = darknet_new(config);
+      image im = load_image_color(argv[2], 0, 0);
+      Detections detections = darknet_detect(dn, im);
+
+      for (int i = 0; i < detections.num; i++) {
+        printf("%s, %f, %f, %f, %f, %f\n", detections.labels[i],
+               detections.probs[i], detections.rects[i].x,
+               detections.rects[i].y, detections.rects[i].w,
+               detections.rects[i].h);
+      }
+      darknet_drop(dn);
     } else if (0 == strcmp(argv[1], "yolo")){
         run_yolo(argc, argv);
     } else if (0 == strcmp(argv[1], "voxel")){
