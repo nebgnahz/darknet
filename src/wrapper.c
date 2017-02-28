@@ -108,6 +108,9 @@ Detections darknet_detect(Darknet *darknet, image im) {
     }
   }
   assert(num == detections.num);
+
+  free_image(sized);
+
   return detections;
 }
 
