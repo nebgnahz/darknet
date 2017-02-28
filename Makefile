@@ -75,6 +75,8 @@ libdarknet.a: $(OBJS)
 libdarknet.so: $(OBJS)
 	$(CC) -shared -fPIC -o $@ $^
 
+install: libdarknet.so
+	cp libdarknet.so /usr/local/lib
 obj:
 	mkdir -p obj
 backup:
@@ -82,7 +84,7 @@ backup:
 results:
 	mkdir -p results
 
-.PHONY: clean
+.PHONY: clean install
 
 clean:
 	rm -rf $(OBJS) $(EXEC) darknet.a

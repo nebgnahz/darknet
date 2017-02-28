@@ -27,16 +27,16 @@ typedef struct {
 
 typedef struct {
   // data file
-  const unsigned char *const datacfg;
+  const char *const datacfg;
 
   // network specification
-  const unsigned char *const network_file;
+  const char *const network_file;
 
   // weight file (contains the model)
-  const unsigned char *const weight_file;
+  const char *const weight_file;
 
   // label file (datacfg file may have it)
-  const unsigned char *const label_file;
+  const char *const label_file;
 } DarknetConfig;
 
 typedef struct {
