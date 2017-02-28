@@ -120,5 +120,5 @@ void darknet_drop(Darknet *darknet) {
 void detections_drop(Detections detections) {
   free(detections.rects);
   free(detections.probs);
-  free_ptrs((void **)detections.labels, detections.num);
+  free(detections.labels);
 }
