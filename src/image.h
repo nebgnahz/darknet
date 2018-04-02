@@ -55,7 +55,8 @@ void show_image_collapsed(image p, char *name);
 
 void save_image_png(image im, const char *name);
 void save_image_jpg(image p, const char *name);
-int encode_image_jpg(image im, void* const buf);
+int encode_image_jpg(image p, unsigned char* const buf);
+image decode_image_jpg(const unsigned char* const buf, int len, int channels);
 
 void print_image(image m);
 

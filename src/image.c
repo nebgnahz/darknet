@@ -724,10 +724,10 @@ void stb_write_fn(void *context, void *data, int size)
     p_context->size += size;
 }
 
-int encode_image_jpg(image im, void* const buf)
+int encode_image_jpg(image im, unsigned char* const buf)
 {
     Context context;
-    context.buf = buf;
+    context.buf = (void*) buf;
     context.size = 0;
     unsigned char *data = calloc(im.w*im.h*im.c, sizeof(char));
     int i,k;
@@ -1488,6 +1488,29 @@ void test_resize(char *filename)
 #endif
 }
 
+image decode_image_jpg(const unsigned char* const buf, int len, int channels)
+{
+    int w, h, c;
+    unsigned char *data = stbi_load_from_memory(buf, len, &w, &h, &c, channels);
+    if (!data) {
+        fprintf(stderr, "Cannot load image from memory %p, %d\nSTB Reason: %s\n", buf, len, stbi_failure_reason());
+        exit(0);
+    }
+    if(channels) c = channels;
+    int i,j,k;
+    image im = make_image(w, h, c);
+    for(k = 0; k < c; ++k){
+        for(j = 0; j < h; ++j){
+            for(i = 0; i < w; ++i){
+                int dst_index = i + w*j + w*h*k;
+                int src_index = k + c*i + c*w*j;
+                im.data[dst_index] = (float)data[src_index]/255.;
+            }
+        }
+    }
+    free(data);
+    return im;
+}
 
 image load_image_stb(char *filename, int channels)
 {
