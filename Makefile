@@ -1,7 +1,7 @@
-GPU=0
+GPU=1
 CUDNN=0
 OPENCV=0
-OPENMP=0
+OPENMP=1
 DEBUG=0
 
 ARCH= -gencode arch=compute_30,code=sm_30 \
@@ -19,7 +19,7 @@ ALIB=libdarknet.a
 EXEC=darknet
 OBJDIR=./obj/
 
-CC=gcc
+CC=gcc-6
 NVCC=nvcc
 AR=ar
 ARFLAGS=rcs
@@ -48,7 +48,7 @@ endif
 ifeq ($(GPU), 1)
 COMMON+= -DGPU -I/usr/local/cuda/include/
 CFLAGS+= -DGPU
-LDFLAGS+= -L/usr/local/cuda/lib -lcuda -lcudart -lcublas -lcurand
+LDFLAGS+= -L/usr/local/cuda/lib -L/usr/local/cuda/lib64 -lcuda -lcudart -lcublas -lcurand
 endif
 
 ifeq ($(CUDNN), 1)
@@ -71,6 +71,8 @@ DEPS = $(wildcard src/*.h) Makefile include/darknet.h
 #all: obj backup results $(SLIB) $(ALIB) $(EXEC)
 all: obj  results $(SLIB) $(ALIB) $(EXEC)
 
+install: $(ALIB) $(SLIB)
+	sudo cp $(ALIB) $(SLIB) /usr/local/lib/
 
 $(EXEC): $(EXECOBJ) $(ALIB)
 	$(CC) $(COMMON) $(CFLAGS) $^ -o $@ $(LDFLAGS) $(ALIB)
